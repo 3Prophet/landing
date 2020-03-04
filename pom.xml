@@ -11,6 +11,7 @@
 	<groupId>ch.fastview</groupId>
 	<artifactId>landing</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<packaging>war</packaging>
 	<name>landing</name>
 	<description>Demo project for Spring Boot</description>
 
@@ -31,6 +32,19 @@
 		<url>https://github.com/3Prophet/landing</url>
 		<tag>HEAD</tag>
 	</scm>
+
+	<distributionManagement>
+		<repository>
+			<id>nexus</id>
+			<name>maven-releases</name>
+			<url>http://localhost:8081/repository/maven-releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>nexus</id>
+			<name>maven-snapshots</name>
+			<url>http://localhost:8081/repository/maven-snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
 
 	<dependencies>
 		<dependency>
@@ -74,5 +88,7 @@
 			</plugin>
 		</plugins>
 	</build>
+
+
 
 </project>
