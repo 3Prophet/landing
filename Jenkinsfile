@@ -12,11 +12,11 @@ node {
     }
 
     stage('Image Build') {
-        sh "${mvnHome}/bin/mvn docker:build"
+        sh "${mvnHome}/bin/mvn dockerimage:build"
     }
 
     stage('Image Push') {
-        sh "${mvnHome}/bin/mvn docker:push"
+        sh "${mvnHome}/bin/mvn dockerimage:push"
     }
 
     stage('Image Remove') {
