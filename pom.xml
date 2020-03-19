@@ -10,7 +10,7 @@
 	<groupId>ch.fastview</groupId>
 	<artifactId>landing</artifactId>
 	<version>1.1.0-SNAPSHOT</version>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 	<name>landing</name>
 	<description>Demo project for Spring Boot</description>
 
@@ -23,6 +23,8 @@
 		<project.reporting.outputEncoding>${encoding}</project.reporting.outputEncoding>
 		<project.resources.sourceEncoding>${encoding}</project.resources.sourceEncoding>
 		<archetype.encoding>${encoding}</archetype.encoding>
+		<docker.image.prefix>localhost:8083</docker.image.prefix>
+		<docker.image.name>fastview-api-clientcompanies-service</docker.image.name>
 	</properties>
 
 	<scm>
@@ -120,6 +122,39 @@
 				<configuration>
 					<tagNameFormat>v@{project.version}</tagNameFormat>
 					<autoVersionSubmodules>true</autoVersionSubmodules>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>io.fabric8</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<version>0.32.0</version>
+				<configuration>
+					<authConfig>
+						<push>
+							<username>admin</username>
+							<password>admin</password>
+						</push>
+					</authConfig>
+					<!--<dockerHost>http://127.0.0.1:2375</dockerHost>-->
+					<verbose>true</verbose>
+					<images>
+						<image>
+							<name>${docker.image.prefix}/${docker.image.name}</name>
+							<build>
+								<dockerFileDir>${project.basedir}/src/main/docker</dockerFileDir>
+								<!--Copies artifact to docker build dir in target-->
+								<assembly>
+									<descriptorRef>artifact</descriptorRef>
+								</assembly>
+								<tags>
+									<tag>${project.version}</tag>
+									<!--
+                                    <tag>${project.version}</tag>
+                                    -->
+								</tags>
+							</build>
+						</image>
+					</images>
 				</configuration>
 			</plugin>
 		</plugins>
