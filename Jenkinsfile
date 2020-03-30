@@ -16,13 +16,13 @@ node {
     }
 
     stage ('Nexus Login') {
-        environment {
-            NEXUS_LOGIN_DOCKER = credentials('nexus-login-docker')
-            NEXUS_PASSWORD_DOCKER = credentials('nexus-password-docker')
-            NEXUS_HOST_DOCKER = credentials('nexus-host-docker')
-            NEXUS_PORT_DOCKER = credentials('nexus-port-docker')
-        }
-        sh "docker login -u ${NEXUS_LOGIN_DOCKER} -p ${NEXUS_PASSWORD_DOCKER} ${NEXUS_HOST_DOCKER}:${NEXUS_PORT_DOCKER}"
+       withCredentials([
+               string(credentialsId: 'nexus-login-docker', variable: 'NEXUS_LOGIN_DOCKER'),
+               string(credentialsId: 'nexus-password-docker', variable: 'NEXUS_PASSWORD_DOCKER'),
+               string(credentialsId: 'nexus-host-docker', variable: 'NEXUS_HOST_DOCKER'),
+               string(credentialsId: 'nexus-port-docker', variable: 'NEXUS_PORT_DOCKER')]) {
+           sh "docker login -u ${NEXUS_LOGIN_DOCKER} -p ${NEXUS_PASSWORD_DOCKER} ${NEXUS_HOST_DOCKER}:${NEXUS_PORT_DOCKER}"
+       }
 
     }
 
