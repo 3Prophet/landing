@@ -22,10 +22,8 @@ node {
             NEXUS_HOST_DOCKER = credentials('nexus-host-docker')
             NEXUS_PORT_DOCKER = credentials('nexus-port-docker')
         }
-        steps {
-            sh "docker login -u ${NEXUS_LOGIN_DOCKER} -p ${NEXUS_PASSWORD_DOCKER} ${NEXUS_HOST_DOCKER}:${NEXUS_PORT_DOCKER}"
+        sh "docker login -u ${NEXUS_LOGIN_DOCKER} -p ${NEXUS_PASSWORD_DOCKER} ${NEXUS_HOST_DOCKER}:${NEXUS_PORT_DOCKER}"
 
-        }
     }
 
     stage('Image Push') {
