@@ -11,6 +11,10 @@ node {
         sh "${mvnHome}/bin/mvn clean package"
     }
 
+    stage('Check') {
+        sh "docker image ls"
+    }
+
     stage('Image Build') {
         sh "${mvnHome}/bin/mvn docker:build"
     }
