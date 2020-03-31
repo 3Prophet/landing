@@ -24,7 +24,7 @@
 		<project.resources.sourceEncoding>${encoding}</project.resources.sourceEncoding>
 		<archetype.encoding>${encoding}</archetype.encoding>
 		<docker.image.prefix>localhost:8083</docker.image.prefix>
-		<docker.image.name>fastview-api-clientcompanies-service</docker.image.name>
+		<docker.image.name>landing-service</docker.image.name>
 	</properties>
 
 	<scm>
