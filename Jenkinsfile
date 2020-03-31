@@ -15,10 +15,6 @@ node {
         sh "${mvnHome}/bin/mvn docker:build"
     }
 
-    stage('Image Build Check') {
-
-    }
-
     stage ('Nexus Login') {
        withCredentials([
                string(credentialsId: 'nexus-login-docker', variable: 'NEXUS_LOGIN_DOCKER'),
