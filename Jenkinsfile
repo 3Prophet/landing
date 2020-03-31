@@ -3,7 +3,7 @@ node {
     def mvnHome
 
     stage('Prepare') {
-        git 'git@github.com:3Prophet/landing.git'
+        checkout scm
         mvnHome = tool 'maven'
     }
 
