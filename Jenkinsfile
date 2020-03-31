@@ -5,6 +5,7 @@ node {
     stage('Prepare') {
         git 'git@github.com:3Prophet/landing.git'
         mvnHome = tool 'maven'
+        sh "git checkout -b feature/FV-02-jenkinsfile"
     }
 
     stage('Build') {
@@ -15,6 +16,10 @@ node {
         sh "${mvnHome}/bin/mvn docker:build"
     }
 
+    stage('Image Build Check') {
+
+    }
+
     stage ('Nexus Login') {
        withCredentials([
                string(credentialsId: 'nexus-login-docker', variable: 'NEXUS_LOGIN_DOCKER'),
@@ -23,7 +28,6 @@ node {
                string(credentialsId: 'nexus-port-docker', variable: 'NEXUS_PORT_DOCKER')]) {
            sh "docker login -u ${NEXUS_LOGIN_DOCKER} -p ${NEXUS_PASSWORD_DOCKER} ${NEXUS_HOST_DOCKER}:${NEXUS_PORT_DOCKER}"
        }
-
     }
 
     stage('Image Push') {
