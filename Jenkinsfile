@@ -5,7 +5,6 @@ node {
     stage('Prepare') {
         git 'git@github.com:3Prophet/landing.git'
         mvnHome = tool 'maven'
-        sh "git checkout -b feature/FV-02-jenkinsfile"
     }
 
     stage('Build') {
