@@ -22,4 +22,8 @@ node {
         sh "${mvnHome}/bin/mvn clean verify"
     }
 
+    stage('Static code analysis') {
+        sh "${mvnHome}/bin/mvn sonar:sonar"
+    }
+
 }
