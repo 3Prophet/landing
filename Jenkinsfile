@@ -2,12 +2,12 @@ node {
 
     def mvnHome
 
-    def mvnProfile
+    def branch
 
     stage('Prepare') {
         checkout scm
         mvnHome = tool 'maven'
-        mvnProfile = ${env.BRANCH_NAME}
+        branch = ${env.BRANCH_NAME}
     }
 
     stage('Build') {
@@ -27,10 +27,7 @@ node {
         sh "${mvnHome}/bin/mvn sonar:sonar"
     }
 
-    stage('Image Build') {
-        sh "${mvnHome}/bin/mvn docker:build"
-    }
-    if (env.BRANCH_NAME == "master" || env.BRANCH_NAME == "develop") {
+    if (branch == "master" || branch == "develop" || branch ==~ /release.*/) {
         stage('Nexus Login') {
             withCredentials([
                     string(credentialsId: 'nexus-login-docker', variable: 'NEXUS_LOGIN_DOCKER'),
@@ -40,12 +37,27 @@ node {
                 sh "docker login -u ${NEXUS_LOGIN_DOCKER} -p ${NEXUS_PASSWORD_DOCKER} ${NEXUS_HOST_DOCKER}:${NEXUS_PORT_DOCKER}"
             }
         }
+    }
 
-
-        stage('Image Push') {
-            sh "${mvnHome}/bin/mvn docker:push -P ${mvnProfile}"
+    if (branch == "master") {
+        stage('Release Image Build and Image Push') {
+            sh "${mvnHome}/bin/mvn release:clean"
+            sh "${mvnHome}/bin/mvn release:prepare"
+            sh "${mvnHome}/bin/mvn docker:build"
+            sh "${mvnHome}/bin/mvn docker:push -P master"
+            sh "${mvnHome}/bin/mvn docker:remove"
+            sh "${mvnHome}/bin/mvn release:perform"
         }
+    }
 
+    if (branch == "develop" || branch ==~ /release.*/) {
+
+        stage('Image Build') {
+            sh "${mvnHome}/bin/mvn docker:build"
+        }
+        stage('Image Push') {
+            sh "${mvnHome}/bin/mvn docker:push -P develop"
+        }
         stage('Image Remove') {
             sh "${mvnHome}/bin/mvn docker:remove"
         }
