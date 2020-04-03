@@ -7,7 +7,7 @@ node {
     stage('Prepare') {
         checkout scm
         mvnHome = tool 'maven'
-        branch = ${env.BRANCH_NAME}
+        branch = "${env.BRANCH_NAME}"
     }
 
 }
