@@ -13,12 +13,11 @@ node {
     stage('Build') {
         sh "${mvnHome}/bin/mvn clean package"
     }
-
-    stage('Unit Tests') {
-        junit "**/target/surefire-reports/TEST-*.xml"
-        archive "target/*.jar"
-    }
-
+   // stage('Unit Tests') {
+   //     junit "**/target/surefire-reports/TEST-*.xml"
+   //     archive "target/*.jar"
+   // }
+    /*
     stage('Integration Tests') {
         sh "${mvnHome}/bin/mvn clean verify"
     }
@@ -26,7 +25,7 @@ node {
     stage('Static code analysis') {
         sh "${mvnHome}/bin/mvn sonar:sonar"
     }
-
+*/
     if (branch == "master" || branch == "develop" || branch ==~ /release.*/) {
         stage('Nexus Login') {
             withCredentials([
@@ -39,27 +38,26 @@ node {
         }
     }
 
-    if (branch == "master") {
-        stage('Release Image Build and Image Push') {
-            sh "${mvnHome}/bin/mvn release:clean"
-            sh "${mvnHome}/bin/mvn release:prepare"
-            sh "${mvnHome}/bin/mvn docker:build"
-            sh "${mvnHome}/bin/mvn docker:push -P master"
-            sh "${mvnHome}/bin/mvn docker:remove"
-            sh "${mvnHome}/bin/mvn release:perform"
-        }
-    }
+    //if (branch == "master") {
+    //    stage('Release Image Build and Image Push') {
+    //        sh "${mvnHome}/bin/mvn release:clean"
+    //        sh "${mvnHome}/bin/mvn release:prepare"
+    //        sh "${mvnHome}/bin/mvn docker:build"
+    //        sh "${mvnHome}/bin/mvn docker:push -P master"
+    //        sh "${mvnHome}/bin/mvn docker:remove"
+    //        sh "${mvnHome}/bin/mvn release:perform"
+    //    }
+    //}
 
-    if (branch == "develop" || branch ==~ /release.*/) {
-
-        stage('Image Build') {
-            sh "${mvnHome}/bin/mvn docker:build"
-        }
-        stage('Image Push') {
-            sh "${mvnHome}/bin/mvn docker:push -P develop"
-        }
-        stage('Image Remove') {
-            sh "${mvnHome}/bin/mvn docker:remove"
-        }
-    }
+    //if (branch == "develop" || branch ==~ /release.*/) {
+//
+    //    stage('Image Build') {
+    //        sh "${mvnHome}/bin/mvn docker:build"
+    // //    stage('Image Push') {
+     //       sh "${mvnHome}/bin/mvn docker:push -P develop"
+    //    }
+    //    stage('Image Remove') {
+     //       sh "${mvnHome}/bin/mvn docker:remove"
+    //    }
+    //}
 }
