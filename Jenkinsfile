@@ -55,7 +55,7 @@ node {
             sh "${mvnHome}/bin/mvn release:clean"
             sh "${mvnHome}/bin/mvn release:prepare"
             sh "${mvnHome}/bin/mvn release:perform"
-            sh "${mvnHome}/bin/mvn docker:build"
+            sh "${mvnHome}/bin/mvn clean package docker:build"
             sh "${mvnHome}/bin/mvn docker:push -P develop"
             sh "${mvnHome}/bin/mvn docker:remove"
         }
