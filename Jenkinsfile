@@ -18,6 +18,8 @@ node {
         checkout scm
         mvnHome = tool 'maven'
         branch = "${env.BRANCH_NAME}"
+        pom = readMavenPom file: 'pom.xml'
+        artifactVersion = pom.version
 
     }
 
@@ -50,7 +52,6 @@ node {
     }
 
     if (branch == "master") {
-        pom = readMavenPom file: 'pom.xml'
         artifactId = pom.artifactId
         artifactVersion = pom.version.replace("-SNAPSHOT", "")
         jarFileName = "${artifactId}-${artifactVersion}.jar"
@@ -75,13 +76,13 @@ node {
 
     if (branch == "develop" || branch == "master" || branch ==~ /release.*/) {
         stage('Image Build') {
-            sh "${mvnHome}/bin/mvn docker:build"
+            sh "${mvnHome}/bin/mvn docker:build -Dproject.version=${artifactVersion}"
         }
         stage('Image Push') {
-            sh "${mvnHome}/bin/mvn docker:push -P develop"
+            sh "${mvnHome}/bin/mvn docker:push -P develop -Dproject.version=${artifactVersion}"
         }
         stage('Image Remove') {
-            sh "${mvnHome}/bin/mvn docker:remove"
+            sh "${mvnHome}/bin/mvn docker:remove -Dproject.version=${artifactVersion}"
         }
     }
 }
