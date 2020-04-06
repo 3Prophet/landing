@@ -93,4 +93,5 @@ node {
         stage('Image Remove') {
             sh "${mvnHome}/bin/mvn docker:remove"
         }
+    }
 }
