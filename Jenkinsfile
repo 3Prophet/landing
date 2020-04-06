@@ -57,7 +57,7 @@ node {
         artifactId = pom.artifactId
         artifactVersion = pom.version.replace("-SNAPSHOT", "")
         jarFileName = "${artifactId}-${artifactVersion}.jar"
-        tag = "v${artifactId}"
+        tag = "v${artifactVersion}"
 
         // Example: ch/fastview/landing/1.1.3/landing-1.1.3.jar
         pathToArtifact = pom.groupId.replaceAll("\\.", "/") + "/${artifactId}/${artifactVersion}/${jarFileName}"
