@@ -6,13 +6,7 @@ node {
 
     def pom
 
-    def artifactId
-
     def artifactVersion
-
-    def jarFileName
-
-    def pathToArtifact
 
     def tag
 
@@ -54,31 +48,23 @@ node {
     }
 
     if (branch == "master") {
-        artifactId = pom.artifactId
         artifactVersion = pom.version.replace("-SNAPSHOT", "")
-        jarFileName = "${artifactId}-${artifactVersion}.jar"
         tag = "v${artifactVersion}"
 
-        // Example: ch/fastview/landing/1.1.3/landing-1.1.3.jar
-        pathToArtifact = pom.groupId.replaceAll("\\.", "/") + "/${artifactId}/${artifactVersion}/${jarFileName}"
-
-        stage('Release') {
+        stage('Release jar') {
             sh "${mvnHome}/bin/mvn release:clean"
             sh "${mvnHome}/bin/mvn release:prepare"
             sh "${mvnHome}/bin/mvn release:perform"
         }
 
-        stage('Download released artifact') {
-            /*
-            withCredentials([string(credentialsId: 'nexus-url', variable: 'NEXUS_URL')]) {
-                sh "curl -O ${NEXUS_URL}/repository/maven-releases/${pathToArtifact}"
-            }
-            sh "if [[ !(-a ./target) || !(-d ./target) ]]; then mkdir target; fi"
-            sh "mv ./${jarFileName} ./target"
-            */
+        stage('Checkout to a release tag') {
             checkout scm: [$class: 'GitSCM', userRemoteConfigs: scm.userRemoteConfigs,
                            branches: [[name: "${tag}"]]], poll: false
+        }
+    }
 
+    if (branch == "master") {
+        stage('Build jar from a release tag') {
             sh "${mvnHome}/bin/mvn clean package"
         }
     }
