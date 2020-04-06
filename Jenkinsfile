@@ -65,7 +65,7 @@ node {
         }
 
         stage('Download released artifact') {
-            withCredentials([credentialsId: 'nexus-url', variable: 'NEXUS_URL']) {
+            withCredentials([string(credentialsId: 'nexus-url', variable: 'NEXUS_URL')]) {
                 sh "curl -O ${NEXUS_URL}/repository/maven-releases/${pathToArtifact}"
             }
             sh "if [[ !(-a ./target) || !(-d ./target) ]]; then mkdir target; fi"
