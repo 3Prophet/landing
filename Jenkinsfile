@@ -73,7 +73,7 @@ node {
         }
     }
 
-    if (branch == "develop" || barnch == "master" || branch ==~ /release.*/) {
+    if (branch == "develop" || branch == "master" || branch ==~ /release.*/) {
         stage('Image Build') {
             sh "${mvnHome}/bin/mvn docker:build"
         }
