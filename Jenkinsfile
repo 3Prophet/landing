@@ -10,11 +10,13 @@ node {
 
     def artifactVersion
 
+    def jarFileName
+
     stage('Prepare') {
         checkout scm
         mvnHome = tool 'maven'
         branch = "${env.BRANCH_NAME}"
-        pom = readMavenPom file: 'pom.xml'
+
     }
 
     stage('Build') {
@@ -46,9 +48,9 @@ node {
     }
 
     if (branch == "master") {
-
+        pom = readMavenPom file: 'pom.xml'
         artifactId = pom.artifactId
-        artifactVersion = pom.version.replase("-SNAPSHOT", "")
+        artifactVersion = pom.version.replace("-SNAPSHOT", "")
         jarFileName = "${artifactId}-${artifactVersion}.jar"
 
         // Example: ch/fastview/landing/1.1.3/landing-1.1.3.jar
