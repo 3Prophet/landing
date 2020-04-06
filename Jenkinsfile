@@ -12,6 +12,8 @@ node {
 
     def jarFileName
 
+    def pathToArtifact
+
     stage('Prepare') {
         checkout scm
         mvnHome = tool 'maven'
@@ -54,7 +56,7 @@ node {
         jarFileName = "${artifactId}-${artifactVersion}.jar"
 
         // Example: ch/fastview/landing/1.1.3/landing-1.1.3.jar
-        pathToArtifact = [pom.groupId.replaceAll("\\.", "/"), artifactId, artifactVersion, jarFileName].join("/")
+        pathToArtifact = pom.groupId.replaceAll("\\.", "/") + "/${artifactId}/${artifactVersion}/${jarFileName}"
 
         stage('Release') {
             sh "${mvnHome}/bin/mvn release:clean"
