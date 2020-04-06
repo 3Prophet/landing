@@ -76,13 +76,13 @@ node {
 
     if (branch == "develop" || branch == "master" || branch ==~ /release.*/) {
         stage('Image Build') {
-            sh "${mvnHome}/bin/mvn docker:build -Dproject.version=${artifactVersion}"
+            sh "${mvnHome}/bin/mvn docker:build -Dversion=${artifactVersion} -Dproject.version=${artifactVersion}"
         }
         stage('Image Push') {
-            sh "${mvnHome}/bin/mvn docker:push -P develop -Dproject.version=${artifactVersion}"
+            sh "${mvnHome}/bin/mvn docker:push -P develop -Dversion=${artifactVersion} -Dproject.version=${artifactVersion}"
         }
         stage('Image Remove') {
-            sh "${mvnHome}/bin/mvn docker:remove -Dproject.version=${artifactVersion}"
+            sh "${mvnHome}/bin/mvn docker:remove -Dversion=${artifactVersion} -Dproject.version=${artifactVersion}"
         }
     }
 }
