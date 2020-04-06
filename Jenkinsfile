@@ -10,6 +10,17 @@ node {
 
     def tag
 
+    //node {
+    //    git 'https...'
+    //    sh 'git log -1 > GIT_LOG'
+    //    git_log = readFile 'GIT_LOG'
+    //    if (git_log.contains('[maven-release-plugin]')) {
+    //        currentBuild.result = 'ABORTED'
+    //        return
+    //    }
+    //    ... // continue with release or whatever
+    //}
+
     stage('Prepare') {
         checkout scm
         mvnHome = tool 'maven'
