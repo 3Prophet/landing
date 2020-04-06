@@ -77,7 +77,7 @@ node {
             sh "mv ./${jarFileName} ./target"
             */
             checkout scm: [$class: 'GitSCM', userRemoteConfigs: scm.userRemoteConfigs,
-                           branches: [[name: ${tag}]]], poll: false
+                           branches: [[name: "${tag}"]]], poll: false
 
             sh "${mvnHome}/bin/mvn clean package"
         }
