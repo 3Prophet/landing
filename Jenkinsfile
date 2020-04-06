@@ -4,10 +4,17 @@ node {
 
     def branch
 
+    def pom
+
+    def artifactId
+
+    def artifactVersion
+
     stage('Prepare') {
         checkout scm
         mvnHome = tool 'maven'
         branch = "${env.BRANCH_NAME}"
+        pom = readMavenPom file: 'pom.xml'
     }
 
     stage('Build') {
@@ -38,7 +45,31 @@ node {
         }
     }
 
-    if (branch == "develop" || branch ==~ /release.*/) {
+    if (branch == "master") {
+
+        artifactId = pom.artifactId
+        artifactVersion = pom.version.replase("-SNAPSHOT", "")
+        jarFileName = "${artifactId}-${artifactVersion}.jar"
+
+        // Example: ch/fastview/landing/1.1.3/landing-1.1.3.jar
+        pathToArtifact = [pom.groupId.replaceAll("\\.", "/"), artifactId, artifactVersion, jarFileName].join("/")
+
+        stage('Release') {
+            sh "${mvnHome}/bin/mvn release:clean"
+            sh "${mvnHome}/bin/mvn release:prepare"
+            sh "${mvnHome}/bin/mvn release:perform"
+        }
+
+        stage('Download released artifact') {
+            withCredentials([credentialsId: 'nexus-url', variable: 'NEXUS_URL']) {
+                sh "curl -O ${NEXUS_URL}/repository/maven-releases/${pathToArtifact}"
+            }
+            sh "if [[ !(-a ./target) || !(-d ./target) ]]; then mkdir target; fi"
+            sh "mv ./${jarFileName} ./target"
+        }
+    }
+
+    if (branch == "develop" || barnch == "master" || branch ==~ /release.*/) {
         stage('Image Build') {
             sh "${mvnHome}/bin/mvn docker:build"
         }
@@ -46,17 +77,6 @@ node {
             sh "${mvnHome}/bin/mvn docker:push -P develop"
         }
         stage('Image Remove') {
-            sh "${mvnHome}/bin/mvn docker:remove"
-        }
-    }
-
-    if (branch == "master") {
-        stage('Release Image Build and Image Push') {
-            sh "${mvnHome}/bin/mvn release:clean"
-            sh "${mvnHome}/bin/mvn release:prepare"
-            sh "${mvnHome}/bin/mvn release:perform"
-            sh "${mvnHome}/bin/mvn clean package docker:build"
-            sh "${mvnHome}/bin/mvn docker:push -P develop"
             sh "${mvnHome}/bin/mvn docker:remove"
         }
     }
