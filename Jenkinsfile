@@ -14,6 +14,8 @@ node {
 
     def pathToArtifact
 
+    def tag
+
     stage('Prepare') {
         checkout scm
         mvnHome = tool 'maven'
@@ -55,6 +57,7 @@ node {
         artifactId = pom.artifactId
         artifactVersion = pom.version.replace("-SNAPSHOT", "")
         jarFileName = "${artifactId}-${artifactVersion}.jar"
+        tag = "v${artifactId}"
 
         // Example: ch/fastview/landing/1.1.3/landing-1.1.3.jar
         pathToArtifact = pom.groupId.replaceAll("\\.", "/") + "/${artifactId}/${artifactVersion}/${jarFileName}"
@@ -66,23 +69,28 @@ node {
         }
 
         stage('Download released artifact') {
+            /*
             withCredentials([string(credentialsId: 'nexus-url', variable: 'NEXUS_URL')]) {
                 sh "curl -O ${NEXUS_URL}/repository/maven-releases/${pathToArtifact}"
             }
             sh "if [[ !(-a ./target) || !(-d ./target) ]]; then mkdir target; fi"
             sh "mv ./${jarFileName} ./target"
+            */
+            checkout scm: [$class: 'GitSCM', userRemoteConfigs: scm.userRemoteConfigs,
+                           branches: [[name: ${tag}]]], poll: false
+
+            sh "${mvnHome}/bin/mvn clean package"
         }
     }
 
     if (branch == "develop" || branch == "master" || branch ==~ /release.*/) {
         stage('Image Build') {
-            sh "${mvnHome}/bin/mvn docker:build -Dversion=${artifactVersion} -Dproject.version=${artifactVersion}"
+            sh "${mvnHome}/bin/mvn docker:build"
         }
         stage('Image Push') {
-            sh "${mvnHome}/bin/mvn docker:push -P develop -Dversion=${artifactVersion} -Dproject.version=${artifactVersion}"
+            sh "${mvnHome}/bin/mvn docker:push -P develop"
         }
         stage('Image Remove') {
-            sh "${mvnHome}/bin/mvn docker:remove -Dversion=${artifactVersion} -Dproject.version=${artifactVersion}"
+            sh "${mvnHome}/bin/mvn docker:remove"
         }
-    }
 }
